@@ -18,7 +18,8 @@ export default class UserController {
 
   public async getRole(req: Request, res: Response) {
     const token = req.headers.authorization as string;
-    const { status, data } = await this.userService.getRole(token);
+    const withoutBearer = token.split(' ')[1];
+    const { status, data } = await this.userService.getRole(withoutBearer);
     if (status !== 'SUCCESSFUL') {
       return res.status(mapStatusHTTP(status)).json(data);
     }
