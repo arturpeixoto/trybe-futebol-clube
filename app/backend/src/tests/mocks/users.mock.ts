@@ -1,0 +1,9 @@
+export const validLoginBody = {email: 'admin@admin.com', password: 'secret_admin'}
+export const invalidPasswordBody = {email: 'asdf@admin.com', password: 'asdfg'}
+export const invalidEmailBody = {email: 'asdfg', password: 'secret_admin'}
+export const noEmailBody = {password: 'asdfgh'}
+export const noPasswordBody = {password: 'secret_admin'}
+export const invalidPasswordFromDb = {email: 'admin@admin.com', password: 'errado', role: 'admin', username: 'Admin'}
+export const validUserFromDb = {email: 'admin@admin.com', password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW', role: 'admin', username: 'Admin'}
+export const validAdminReturnFromVerify = {iat: '124556', email: 'admin@admin.com', role: 'admin'}
+export const validUserReturnFromVerify = {iat: '124556', email: 'user@user.com', role: 'user'}

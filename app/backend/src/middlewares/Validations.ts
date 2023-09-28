@@ -26,27 +26,22 @@ export default class Validations {
       return res.status(401).json({ message: 'Token not found' });
     }
     const withoutBearer = token.split(' ')[1];
-    const validToken = JWT.verify(withoutBearer);
+    const validToken = await JWT.verify(withoutBearer);
     if (validToken === 'Token must be a valid token') {
       return res.status(401).json({ message: validToken });
     }
     next();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static isNumber(value: any): boolean {
-    return !Number.isNaN(parseFloat(value)) && Number.isFinite(value);
-  }
-
   static async validateCreateMatch(req: Request, res: Response, next: NextFunction):
   Promise<Response | void> {
     const { homeTeamGoals, awayTeamGoals, homeTeamId, awayTeamId } = req.body;
-    if (!Validations.isNumber(homeTeamGoals) || !Validations.isNumber(awayTeamGoals)) {
+    if (!Number(Number(homeTeamGoals)) || !Number(Number(awayTeamGoals))) {
       return res.status(422).json(
         { message: invalidaDataString },
       );
     }
-    if (!Validations.isNumber(homeTeamId) || !Validations.isNumber(awayTeamId)) {
+    if (!Number(Number(homeTeamId)) || !Number(Number(awayTeamId))) {
       return res.status(422).json(
         { message: invalidaDataString },
       );

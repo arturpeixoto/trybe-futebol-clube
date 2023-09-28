@@ -26,7 +26,7 @@ export default class UserService {
 
   public async getRole(token: string):
   Promise<ServiceResponse<ServiceMessage | string | IRole>> {
-    const decoded = this.jwtService.verify(token) as IVerifyTokenSucess;
+    const decoded = await this.jwtService.verify(token) as IVerifyTokenSucess;
     const { role } = decoded;
     return { status: 'SUCCESSFUL', data: { role } };
   }
