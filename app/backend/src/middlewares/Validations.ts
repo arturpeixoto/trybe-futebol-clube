@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import JWT from '../utils/JWT';
 
-const invalidaDataString = 'Invalid data';
+const invalidDataString = 'Invalid data';
 
 export default class Validations {
   static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
@@ -33,25 +33,31 @@ export default class Validations {
     next();
   }
 
+  static isValidNumber(value: number | string | undefined | null) {
+    if (typeof value !== 'number') {
+      return false;
+    }
+    return Number.isInteger(value) && value >= 0;
+  }
+
   static async validateCreateMatch(req: Request, res: Response, next: NextFunction):
   Promise<Response | void> {
-    const { homeTeamGoals, awayTeamGoals, homeTeamId, awayTeamId } = req.body;
-    if (!Number(Number(homeTeamGoals)) || !Number(Number(awayTeamGoals))) {
-      return res.status(422).json(
-        { message: invalidaDataString },
-      );
+    try {
+      const { homeTeamGoals, awayTeamGoals, homeTeamId, awayTeamId } = req.body;
+      if (!Validations.isValidNumber(homeTeamGoals) || !Validations.isValidNumber(awayTeamGoals)) {
+        throw new Error(invalidDataString);
+      } if (!Validations.isValidNumber(homeTeamId) || !Validations.isValidNumber(awayTeamId)) {
+        throw new Error(invalidDataString);
+      } if (homeTeamId === awayTeamId) {
+        throw new Error('It is not possible to create a match with two equal teams');
+      }
+      next();
+    } catch (error) {
+      const e = error as Error;
+      if (e.message.includes('equal teams')) {
+        return res.status(422).json({ message: e.message });
+      } return res.status(422).json({ message: e.message });
     }
-    if (!Number(Number(homeTeamId)) || !Number(Number(awayTeamId))) {
-      return res.status(422).json(
-        { message: invalidaDataString },
-      );
-    }
-    if (homeTeamId === awayTeamId) {
-      return res.status(422).json(
-        { message: 'It is not possible to create a match with two equal teams' },
-      );
-    }
-    next();
   }
 
   static async validateUpdateMatch(
@@ -62,7 +68,7 @@ export default class Validations {
     const { homeTeamGoals, awayTeamGoals } = req.body;
     if (!Number(Number(homeTeamGoals)) || !Number(Number(awayTeamGoals))) {
       return res.status(422).json(
-        { message: invalidaDataString },
+        { message: invalidDataString },
       );
     }
     next();
