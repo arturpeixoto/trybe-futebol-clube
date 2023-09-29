@@ -15,4 +15,9 @@ router.get(
   (req: Request, res: Response) => leaderboardController.getLeaderboardHome(req, res),
 );
 
+router.get(
+  '/',
+  (req: Request, res: Response) => leaderboardController.getLeaderboardTotal(req, res),
+);
+
 export default router;

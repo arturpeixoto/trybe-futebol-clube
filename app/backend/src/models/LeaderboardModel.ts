@@ -9,8 +9,9 @@ import {
   THomeOrAway,
 } from '../Interfaces/leaderboard/ILeaderboard';
 import { ITeam } from '../Interfaces/teams/ITeam';
+import { ILeaderboardModel } from '../Interfaces/leaderboard/ILeaderboardModel';
 
-export default class LeaderboardModel {
+export default class LeaderboardModel implements ILeaderboardModel {
   private matchModel = SequelizeMatch;
   private teamModel = SequelizeTeam;
   private matches: IMatch[] = [];
@@ -18,8 +19,9 @@ export default class LeaderboardModel {
   private teamsId: number[] = [];
   private _leaderboardAway: ILeaderboard[] = [];
   private _leaderboardHome: ILeaderboard[] = [];
+  private _leaderboardTotal: ILeaderboard[] = [];
 
-  async leaderboardAway() {
+  async leaderboardAway(): Promise<ILeaderboard[]> {
     this._leaderboardAway = [];
     await this.getMatches();
     await this.getTeams();
@@ -27,12 +29,22 @@ export default class LeaderboardModel {
     return LeaderboardModel.order(this._leaderboardAway);
   }
 
-  async leaderboardHome() {
+  async leaderboardHome(): Promise<ILeaderboard[]> {
     this._leaderboardHome = [];
     await this.getMatches();
     await this.getTeams();
     this.formulateHomeLeaderboard();
     return LeaderboardModel.order(this._leaderboardHome);
+  }
+
+  async leaderboardTotal(): Promise<ILeaderboard[]> {
+    this._leaderboardTotal = [];
+    await this.getMatches();
+    await this.getTeams();
+    this.formulateAwayLeaderboard();
+    this.formulateHomeLeaderboard();
+    this.formulateTotalLeaderboard();
+    return LeaderboardModel.order(this._leaderboardTotal);
   }
 
   async getTeams() {
@@ -104,6 +116,35 @@ export default class LeaderboardModel {
       const teamLeaderboard = { totalPoints, totalGames, ...results, ...goals, efficiency };
       const { teamName } = this.teams[teamId - 1];
       this._leaderboardHome.push({ name: teamName, ...teamLeaderboard });
+    });
+  }
+
+  public static calculateTeamStats(teamName: string, homeLeaderboard: ILeaderboard, awayLeaderboard:
+  ILeaderboard): ILeaderboard {
+    return {
+      name: teamName,
+      totalPoints: homeLeaderboard.totalPoints + awayLeaderboard.totalPoints,
+      totalGames: homeLeaderboard.totalGames + awayLeaderboard.totalGames,
+      totalVictories: homeLeaderboard.totalVictories + awayLeaderboard.totalVictories,
+      totalDraws: homeLeaderboard.totalDraws + awayLeaderboard.totalDraws,
+      totalLosses: homeLeaderboard.totalLosses + awayLeaderboard.totalLosses,
+      goalsBalance: homeLeaderboard.goalsBalance + awayLeaderboard.goalsBalance,
+      goalsFavor: homeLeaderboard.goalsFavor + awayLeaderboard.goalsFavor,
+      goalsOwn: homeLeaderboard.goalsOwn + awayLeaderboard.goalsOwn,
+      efficiency: Number((((homeLeaderboard.totalPoints + awayLeaderboard.totalPoints)
+       / ((homeLeaderboard.totalGames + awayLeaderboard.totalGames) * 3)) * 100).toFixed(2)),
+    };
+  }
+
+  public formulateTotalLeaderboard() {
+    this.teams.forEach((team) => {
+      const homeLeaderboard = this._leaderboardHome
+        .find((stats) => stats.name === team.teamName) as ILeaderboard;
+      const awayLeaderboard = this._leaderboardAway
+        .find((stats) => stats.name === team.teamName) as ILeaderboard;
+      const finalLeaderboard = LeaderboardModel
+        .calculateTeamStats(team.teamName, homeLeaderboard, awayLeaderboard);
+      this._leaderboardTotal.push(finalLeaderboard);
     });
   }
 

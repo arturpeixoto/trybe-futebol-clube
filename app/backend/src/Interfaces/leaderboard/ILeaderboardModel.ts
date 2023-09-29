@@ -1,14 +1,19 @@
-// import {
-//   GoalsInMatches,
-//   ILeaderboard,
-//   SummaryOfResults,
-//   TeamResults,
-// } from './ILeaderboard';
+import {
+  GoalsInMatches,
+  ILeaderboard,
+  THomeOrAway,
+  TeamResults,
+} from './ILeaderboard';
 
-// export interface ILeaderboardModel {
-//   getGoals(id: number): Promise<GoalsInMatches>;
-//   getGoalBalance(goalsInMatches: GoalsInMatches): GoalsBalance;
-//   getResults(id: number): Promise<TeamResults>;
-//   getSummary(results: TeamResults): Promise<SummaryOfResults>;
-//   getLeaderboard(): Promise<ILeaderboard[]>;
-// }
+export interface ILeaderboardModel {
+  leaderboardAway(): Promise<ILeaderboard[]>;
+  leaderboardHome(): Promise<ILeaderboard[]>;
+  leaderboardTotal(): Promise<ILeaderboard[]>;
+  getTeams(): Promise<void>;
+  getMatches(): Promise<void>;
+  getGoals(id: number, homeOrAway: THomeOrAway): GoalsInMatches;
+  getResults(id: number, homeOrAway: THomeOrAway): TeamResults;
+  formulateAwayLeaderboard(): void;
+  formulateHomeLeaderboard(): void;
+  formulateTotalLeaderboard(): void;
+}
