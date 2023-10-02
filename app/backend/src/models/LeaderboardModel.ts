@@ -127,7 +127,7 @@ export default class LeaderboardModel implements ILeaderboardModel {
 
   public static calculateTeamStats(teamName: string, homeLeaderboard: ILeaderboard, awayLeaderboard:
   ILeaderboard): ILeaderboard {
-    const returnedTotalLeaderboard = {
+    return {
       name: teamName,
       totalPoints: homeLeaderboard.totalPoints + awayLeaderboard.totalPoints,
       totalGames: homeLeaderboard.totalGames + awayLeaderboard.totalGames,
@@ -140,18 +140,19 @@ export default class LeaderboardModel implements ILeaderboardModel {
       efficiency: Number((((homeLeaderboard.totalPoints + awayLeaderboard.totalPoints)
        / ((homeLeaderboard.totalGames + awayLeaderboard.totalGames) * 3)) * 100).toFixed(2)),
     };
-    return returnedTotalLeaderboard;
   }
 
   public formulateTotalLeaderboard() {
     this.teams.forEach((team) => {
-      const homeLeaderboard = this._leaderboardHome
-        .find((stats) => stats.name === team.teamName) as ILeaderboard;
-      const awayLeaderboard = this._leaderboardAway
-        .find((stats) => stats.name === team.teamName) as ILeaderboard;
-      const finalLeaderboard = LeaderboardModel
-        .calculateTeamStats(team.teamName, homeLeaderboard, awayLeaderboard);
-      this._leaderboardTotal.push(finalLeaderboard);
+      if (!this._leaderboardTotal.find((time) => team.teamName === time.name)) {
+        const homeLeaderboard = this._leaderboardHome
+          .find((stats) => stats.name === team.teamName) as ILeaderboard;
+        const awayLeaderboard = this._leaderboardAway
+          .find((stats) => stats.name === team.teamName) as ILeaderboard;
+        const finalLeaderboard = LeaderboardModel
+          .calculateTeamStats(team.teamName, homeLeaderboard, awayLeaderboard);
+        this._leaderboardTotal.push(finalLeaderboard);
+      }
     });
   }
 
