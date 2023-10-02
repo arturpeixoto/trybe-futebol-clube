@@ -38,16 +38,21 @@ export default class LeaderboardModel implements ILeaderboardModel {
   }
 
   async leaderboardTotal(): Promise<ILeaderboard[]> {
+    this._leaderboardAway = [];
     this._leaderboardTotal = [];
+    this._leaderboardHome = [];
     await this.getMatches();
     await this.getTeams();
     this.formulateAwayLeaderboard();
     this.formulateHomeLeaderboard();
     this.formulateTotalLeaderboard();
-    return LeaderboardModel.order(this._leaderboardTotal);
+    const orderedLeaderboard = LeaderboardModel.order(this._leaderboardTotal);
+    return orderedLeaderboard;
   }
 
   async getTeams() {
+    this.teamsId = [];
+    this.teams = [];
     const allTeams = await this.teamModel.findAll();
     this.teams = allTeams
       .map((team) => team.dataValues) as unknown as ITeam[];
@@ -55,6 +60,7 @@ export default class LeaderboardModel implements ILeaderboardModel {
   }
 
   async getMatches(): Promise<void> {
+    this.matches = [];
     this.matches = await this.matchModel.findAll({ where: { inProgress: false } });
   }
 
@@ -121,19 +127,20 @@ export default class LeaderboardModel implements ILeaderboardModel {
 
   public static calculateTeamStats(teamName: string, homeLeaderboard: ILeaderboard, awayLeaderboard:
   ILeaderboard): ILeaderboard {
-    return {
+    const returnedTotalLeaderboard = {
       name: teamName,
       totalPoints: homeLeaderboard.totalPoints + awayLeaderboard.totalPoints,
       totalGames: homeLeaderboard.totalGames + awayLeaderboard.totalGames,
       totalVictories: homeLeaderboard.totalVictories + awayLeaderboard.totalVictories,
       totalDraws: homeLeaderboard.totalDraws + awayLeaderboard.totalDraws,
       totalLosses: homeLeaderboard.totalLosses + awayLeaderboard.totalLosses,
-      goalsBalance: homeLeaderboard.goalsBalance + awayLeaderboard.goalsBalance,
       goalsFavor: homeLeaderboard.goalsFavor + awayLeaderboard.goalsFavor,
       goalsOwn: homeLeaderboard.goalsOwn + awayLeaderboard.goalsOwn,
+      goalsBalance: homeLeaderboard.goalsBalance + awayLeaderboard.goalsBalance,
       efficiency: Number((((homeLeaderboard.totalPoints + awayLeaderboard.totalPoints)
        / ((homeLeaderboard.totalGames + awayLeaderboard.totalGames) * 3)) * 100).toFixed(2)),
     };
+    return returnedTotalLeaderboard;
   }
 
   public formulateTotalLeaderboard() {
