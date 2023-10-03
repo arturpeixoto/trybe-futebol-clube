@@ -97,7 +97,8 @@ export default class LeaderboardModel implements ILeaderboardModel {
   static getSummary(results: TeamResults): SummaryOfResults {
     const totalPoints = results.totalVictories * 3 + results.totalDraws;
     const totalGames = results.totalDraws + results.totalLosses + results.totalVictories;
-    const efficiency = Number(((totalPoints / (totalGames * 3)) * 100).toFixed(2));
+    const efficiency = totalGames === 0 ? 0
+      : Number(((totalPoints / (totalGames * 3)) * 100).toFixed(2));
     return { totalPoints, totalGames, efficiency };
   }
 
@@ -137,7 +138,8 @@ export default class LeaderboardModel implements ILeaderboardModel {
       goalsFavor: homeLeaderboard.goalsFavor + awayLeaderboard.goalsFavor,
       goalsOwn: homeLeaderboard.goalsOwn + awayLeaderboard.goalsOwn,
       goalsBalance: homeLeaderboard.goalsBalance + awayLeaderboard.goalsBalance,
-      efficiency: Number((((homeLeaderboard.totalPoints + awayLeaderboard.totalPoints)
+      efficiency: homeLeaderboard.totalGames + awayLeaderboard.totalGames === 0 ? 0
+        : Number((((homeLeaderboard.totalPoints + awayLeaderboard.totalPoints)
        / ((homeLeaderboard.totalGames + awayLeaderboard.totalGames) * 3)) * 100).toFixed(2)),
     };
   }
