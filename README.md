@@ -1,6 +1,6 @@
 # TRYBE FUTEBOL CLUBE - GERENCIAMENTO DE PARTIDAS
 ## O que é e como funciona?
-O TRYBE FUTEBOL CLUBE (carinhosamente apelidado de TFC) é um projeto no curso de Desenvolvimento Web Full Stack pela Trybe. O objetivo do projeto foi criar uma back-end para ser consumido pelo front-end que já havia sido desenvolvido. 
+O TRYBE FUTEBOL CLUBE (carinhosamente apelidado de TFC) é um projeto no curso de Desenvolvimento Web Full Stack pela Trybe. O projeto é um gerenciador de partidas e resultados de um campeonato de futebol. Se coloca os resultados das partida (que podem ser editados e deletados também) e automaticamente a tabela é atualizada. O objetivo do projeto foi criar o back-end para ser consumido pelo front-end que já havia sido desenvolvido anteriormente. 
 ## Como posso utilizar esse projeto na minha máquina ?
 
     1. Faça um git clone ou fork este repositório.
